@@ -1,0 +1,8 @@
+Halaman login dibuka
+Input email ditemukan
+Email diisi
+Password diisi
+Tombol login diklik
+Selesai login
+⚠️ Halaman belum berpindah ke organization dalam 10 detik
+📍 Current URL: https://gem.goersapp.com/organization?redirect=/
