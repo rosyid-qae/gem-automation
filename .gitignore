@@ -1,2 +1,12 @@
 .venv/
 
+.venv/
+__pycache__/
+.pytest_cache/
+allure-results/
+allure-report/
+.venv/
+__pycache__/
+.pytest_cache/
+allure-results/
+allure-report/
