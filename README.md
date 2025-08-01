@@ -21,27 +21,20 @@ playwright.config.py    # Playwright configuration (optional)
 
 
 🚀 Getting Started
-Clone the repo
-
+1. Clone the repo
 bash
-Copy
-Edit
 git clone https://github.com/rosyid-qae/gem-automation.git
 cd gem-automation
-Create virtual environment & install requirements
 
-bash
-Copy
-Edit
+2. Create virtual environment & install requirements
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-Run tests with Allure
 
-bash
-Copy
-Edit
+3. Run tests with Allure
 pytest --alluredir=allure-results
 allure serve allure-results
+
+
 📄 License
 MIT License
