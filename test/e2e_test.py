@@ -3,6 +3,17 @@ from playwright.sync_api import sync_playwright
 import random
 import string
 
+def select_organization_by_name(page, org_name):
+    buttons = page.locator('[data-testid="cta-select-organization"]')
+    for i in range(buttons.count()):
+        button = buttons.nth(i)
+        parent = button.locator("xpath=..")
+        if org_name.upper() in parent.inner_text().upper():
+            button.click()
+            print(f"✅ Berhasil pilih organisasi '{org_name}'")
+            return
+    raise Exception(f"❌ Organisasi '{org_name}' tidak ditemukan")
+
 # Definisi untuk menuju ke Menu
 def go_to_menu(page, menu_text, expected_url, content_selector=None):
     page.click(f'nav.site-menu a:has-text("{menu_text}")', force=True)
@@ -100,34 +111,26 @@ with sync_playwright() as p:
     browser = p.chromium.launch(headless=False, slow_mo=1000)
     page = browser.new_page()
     page.goto('https://gem.goersapp.com', timeout=60000)
-   
+
+
     # Halaman Login
     username = page.wait_for_selector('input[type="text"]')    
-    username.type('usersatu96@gmail.com')
+    username.type('userdua95@gmail.com')
     password = page.wait_for_selector('input[type="password"]')
-    password.type('testing01')
-    page.click('.btn-success')
+    password.type('testing02')
 
-    page.get_by_test_id("")
-    page.wait_for_load_state('networkidle')
+    page.click('.btn-success')
+    page.wait_for_selector('input[placeholder="Cari Organisasi"]', timeout=15000)
     print("✅ Berhasil login")
 
-     # Cari Organisasi
-    search_field = page.wait_for_selector('input[placeholder="Cari Organisasi"]')
-    search_field.fill('SQA PROD')
-    search_field.press('Enter')
+    # Cari dan pilih organisasi dengan nama "SQA PROD"
+    page.fill('input[placeholder="Cari Organisasi"]', 'SQA PROD')
+    page.press('input[placeholder="Cari Organisasi"]', 'Enter')
     print("✅ Berhasil menampilkan organisasi")
 
-     # TUNGGU ORGANISASI MUNCUL
-    page.wait_for_selector('div.___organization:has-text("SQA PROD")')
-
-    # TEMUKAN CARD ORGANISASI YANG BENAR
-    sqa_card = page.locator('div:has(div.___organization:has-text("SQA PROD"))')
-
-    # KLIK TOMBOL PILIH DI DALAMNYA
-    sqa_card.locator('a:has-text("PILIH")').click()
-    page.wait_for_load_state('networkidle')
-    print("✅ Berhasil masuk organisasi")
+    # Gunakan fungsi klik tombol PILIH untuk organisasi
+    select_organization_by_name(page, "SQA PROD")
+    page.wait_for_selector('nav.site-menu', timeout=30000)
 
     page.click('nav.site-menu a:has-text("Event")', force=True)
     page.wait_for_timeout(2000)  # Tunggu sebentar supaya SPA load konten baru
