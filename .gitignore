@@ -11,3 +11,7 @@ __pycache__/
 allure-results/
 allure-report/
 .venv/
+__pycache__/
+*.pyc
+*.pyc
+__pycache__/
