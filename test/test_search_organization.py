@@ -25,12 +25,6 @@ def test_search_organization_success():
         org_page.wait_for_organization_page()
         page.wait_for_load_state("networkidle")
 
-        # Cari organisasi
-        # search_input = page.locator('input[placeholder="Cari Organisasi"]')
-        # search_input.fill('SQA PROD')
-        # search_input.press('Enter')
-        # print("✅ Berhasil mengisi pencarian SQA PROD")
-
         search_input = page.locator('input[placeholder="Cari Organisasi"]')
         search_input.click()
         search_input.fill('')
@@ -93,7 +87,7 @@ def test_search_organization_success():
         browser.close() 
 
 @allure.title("Cari organisasi dengan nama yang tidak ada, pastikan tidak muncul")
-def test_search_organization_negative():
+def test_search_organization_invalid():
      with sync_playwright() as p:
         browser = p.chromium.launch(headless=False, slow_mo=100)
         page = browser.new_page()
@@ -148,55 +142,3 @@ def test_create_organization_redirect():
 
         browser.close()
 
-def test_search_organization_positive():
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False, slow_mo=100)
-        page = browser.new_page()
-        page.goto("https://gem.goersapp.com")
-
-        # Login
-        login = LoginPage(page)
-        login.login_valid("userdua95@gmail.com", "testing02")
-
-        # Tunggu halaman organisasi
-        org_page = SearchOrganizationPage(page)
-        org_page.wait_for_organization_page()
-        page.wait_for_load_state("networkidle")
-
-        # Isi input filter tanpa ENTER
-        search_input = page.locator('input[placeholder="Cari Organisasi"]')
-        search_input.click()
-        search_input.fill('')  # Kosongkan terlebih dahulu
-        search_input.type('SQA PROD', delay=100)  # Ketik pelan agar trigger
-
-         # TUNGGU ORGANISASI MUNCUL
-        page.wait_for_selector('div.___organization:has-text("SQA PROD")')
-
-        # TEMUKAN CARD ORGANISASI YANG BENAR
-        org_page = page.locator('div:has(div.___organization:has-text("SQA PROD"))')
-
-        # KLIK TOMBOL PILIH DI DALAMNYA
-        org_page.locator('a:has-text("PILIH")').click()
-        page.wait_for_load_state('networkidle')
-        print("✅ Berhasil masuk organisasi")
-
-    
-        # Klik tombol PILIH di dalam card yang benar
-        pilih_button = org_page.locator('button:has-text("PILIH")')
-        assert pilih_button.count() > 0, "❌ Tombol PILIH tidak ditemukan di dalam card"
-        pilih_button.click()
-        print("🖱️ Klik tombol PILIH pada organisasi SQA PROD")
-
-        # Tunggu tombol berubah jadi LOGGING IN di dalam card yang sama
-        org_page.locator('button:has-text("LOGGING IN")').wait_for(state="visible", timeout=10000)
-        print("⏳ Tombol berubah jadi LOGGING IN")
-
-        # Tunggu redirect
-        try:
-            page.wait_for_url(lambda url: not url.endswith("?redirect=/"), timeout=10000)
-            print("✅ Redirect berhasil")
-        except:
-            page.screenshot(path="error_redirect.png")
-            raise AssertionError("❌ Gagal redirect dari halaman organisasi")
-
-        browser.close()

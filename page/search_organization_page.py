@@ -9,69 +9,9 @@ class SearchOrganizationPage:
         self.create_button = 'a.___add__organization'
         self.search_button = 'Item__button'
 
+    @allure.step("Tunggu halaman organisasi siap")
     def wait_for_organization_page(self):
         self.page.wait_for_selector('input[placeholder="Cari Organisasi"]', timeout=15000)
-
-    @allure.step("Cari organisasi dengan nama: {name}")
-    def search_organization(self, name):
-        self.page.locator(self.search_input).wait_for(state="visible", timeout=10000)
-        self.page.locator(self.search_input).fill(name)
-
-        try:
-            self.page.locator("span.input-group-btn button").click(timeout=3000)
-            print("[DEBUG] Tombol search diklik")
-        except Exception as e:
-            print(f"[DEBUG] Tombol search tidak bisa diklik — lewati klik. Error: {e}")
-
-        # Tunggu hasil pencarian muncul
-        try:
-            self.page.locator(self.org_card).first.wait_for(state="visible", timeout=5000)
-        except:
-            print("[WARNING] Tidak ada organisasi muncul setelah pencarian")
-
-        self.page.wait_for_timeout(1000)
-
-        # Debugging: Ambil screenshot setelah pencarian
-        self.page.screenshot(path="debug_search_organization.png")
-
-        # Debugging: Log page content after search
-        print("[DEBUG] Page content after search:")
-        print(self.page.content())
-
-        # Verifikasi apakah ada organisasi yang ditemukan
-        expect(self.page.locator(self.org_card)).to_have_count_greater_than(0, timeout=5000)
-
-        # Debugging: Ambil screenshot setelah verifikasi
-        self.page.screenshot(path="debug_verify_organization.png")
-
-        # Debugging: Log jumlah organisasi ditemukan
-        count = self.page.locator(self.org_card).count()
-        print(f"[DEBUG] Jumlah organisasi ditemukan: {count}")
-        if count == 0:
-            raise Exception(f"[ERROR] Tidak menemukan organisasi dengan nama: {name}")
-        
-        # Ambil screenshot untuk debugging
-        self.page.screenshot(path="debug_search_result.png")
-
-        # Debugging: Log page content after waiting for organization card
-        print("[DEBUG] Page content after waiting for organization card:")
-        print(self.page.content())
-
-        # Tunggu tombol "PILIH" muncul di dalam org_card
-        self.page.locator(f'{self.org_card}:has-text("{name}")').locator("text=PILIH").wait_for(state="visible", timeout=10000)
-
-        # Debugging: Ambil screenshot setelah tombol "PILIH" muncul
-        self.page.screenshot(path="debug_select_button.png")
-
-        # Debugging: Log page content before clicking "PILIH"
-        print("[DEBUG] Page content before clicking 'PILIH':")
-        print(self.page.content())
-
-        # Klik tombol "PILIH" di dalam org_card
-        self.page.locator(f'{self.org_card}:has-text("{name}")').locator("text=PILIH").click()
-
-        # Tunggu load state setelah klik
-        self.page.wait_for_load_state('networkidle')
 
     @allure.step("Klik organisasi yang ditemukan")
     def click_found_organization(self):
@@ -88,10 +28,40 @@ class SearchOrganizationPage:
     def verify_no_result(self):
         expect(self.page.locator(self.org_card)).to_have_count(0)
 
-    # Di SearchOrganizationPage
-    def wait_for_organization_page(self):
-        print("Menunggu halaman organisasi siap")
-        self.page.wait_for_selector("text=Pilih Organisasi", timeout=10000)
+    @allure.step("Cari organisasi dengan nama: {name}")
+    def search_organization(self, name):
+        self.page.locator(self.search_input).wait_for(state="visible", timeout=10000)
+        self.page.locator(self.search_input).fill(name)
+
+        try:
+            self.page.locator("span.input-group-btn button").click(timeout=3000)
+            print("[DEBUG] Tombol search diklik")
+        except Exception as e:
+            print(f"[DEBUG] Tombol search tidak bisa diklik — lewati klik. Error: {e}")
+
+        self.page.wait_for_timeout(1000)
+
+        org_elements = self.page.locator('div.___organization')
+        count = org_elements.count()
+
+        found = False
+        for i in range(count):
+            org_text = org_elements.nth(i).inner_text().strip()
+            print(f"[DEBUG] Ditemukan organisasi ke-{i+1}: {org_text}")
+            if name.lower() in org_text.lower():
+                print(f"[INFO] Organisasi '{name}' ditemukan di urutan ke-{i+1}")
+                
+                # Dapatkan tombol 'PILIH' yang sesuai berdasarkan urutan
+                pilih_buttons = self.page.locator('a[data-testid="cta-select-organization"]')
+                pilih_buttons.nth(i).wait_for(state="visible", timeout=5000)
+                pilih_buttons.nth(i).click()
+                found = True
+                break
+
+        if not found:
+            raise Exception(f"[ERROR] Organisasi '{name}' tidak ditemukan atau tombol PILIH tidak tersedia.")
+
+        self.page.wait_for_load_state('networkidle')
 
 
 

@@ -1,22 +1,45 @@
 import allure
-from playwright.sync_api import Page, expect
 
 class HomePage:
-    def __init__(self, page: Page):
+    def __init__(self, page):
         self.page = page
 
-    def click_buat_event(self):
-        self.page.get_by_role("button", name="Buat Event").click()
+    @allure.step("Klik tombol LIHAT dari halaman Home")
+    def click_button_lihat(self):
+        lihat_button = self.page.locator('a[data-testid="cta-organization-redirect-website"]')
 
-    def click_lihat_event(self):
+        lihat_button.wait_for(state="visible", timeout=10000)
+
+        self.page.wait_for_function("""
+            () => {
+                const el = document.querySelector('a[data-testid="cta-organization-redirect-website"]');
+                return el && el.getAttribute('href') && !el.getAttribute('href').includes('--undefined');
+            }
+        """)
+
+        href = lihat_button.get_attribute("href")
+        print("[DEBUG] href tombol LIHAT:", href)
+
         with self.page.expect_popup() as popup_info:
-            self.page.get_by_role("button", name="Lihat").click()
+            lihat_button.click()
+
         popup = popup_info.value
-        popup.close()  # Jika harus langsung ditutup
+        popup.wait_for_load_state("load")
+
+        print("[DEBUG] URL popup terbuka:", popup.url)
+        popup.screenshot(path="debug_popup_success.png")
+
+        # Validasi path agar tidak gagal karena beda www
+        from urllib.parse import urlparse
+        expected_path = urlparse(href).path
+        actual_path = urlparse(popup.url).path
+        assert expected_path == actual_path, f"Expected path: {expected_path}, got: {actual_path}"
+
         return popup
 
-    def click_atur_event(self):
-        self.page.get_by_role("button", name="Atur").click()
-
-    def click_nav_menu(self, menu_name):
-        self.page.get_by_role("link", name=menu_name).click()
+    @allure.step("Klik tombol ATUR dan tunggu redirect ke halaman /organizations")
+    def click_button_atur(self):
+        atur_button = self.page.locator('a[data-testid="cta-organization-setting"]')
+        atur_button.wait_for(state="visible", timeout=10000)
+        atur_button.click()
+        self.page.wait_for_url("**/organizations", timeout=20000)

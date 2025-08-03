@@ -23,26 +23,41 @@ def login_and_go_to_home():
         search = SearchOrganizationPage(page)
         search.search_organization("SQA PROD")
 
+        try:
+            print("[DEBUG] Menunggu elemen Home muncul...")
+            page.wait_for_selector("text=BUAT AKTIVITAS", timeout=5000)
+            print("[DEBUG] Halaman Home berhasil dimuat")
+        except:
+            print("[WARNING] Halaman Home tidak berhasil dimuat")
+            page.screenshot(path="debug_home_failed.png")
+            raise
+
         yield page
         browser.close()
 
-@allure.title("Masuk ke Buat Event dari Home Page")
-def test_click_buat_event(login_and_go_to_home):
-    page = login_and_go_to_home
-    home = HomePage(page)
-    home.click_buat_event()
-    assert "/event/create" in page.url
 
-@allure.title("Klik tombol Lihat dan popup tertutup")
-def test_click_lihat_event(login_and_go_to_home):
+@allure.title("Klik tombol LIHAT membuka tab baru ke public page organisasi")
+def test_click_button_lihat(login_and_go_to_home):
     page = login_and_go_to_home
     home = HomePage(page)
-    popup = home.click_lihat_event()
-    assert popup.is_closed()
 
-@allure.title("Klik tombol Atur dan pindah ke halaman atur")
-def test_click_atur_event(login_and_go_to_home):
+    popup = home.click_button_lihat()
+    popup.wait_for_selector("h1, .organization-header, .event-list", timeout=10000)
+
+    # Tambahan assert jika diperlukan
+    assert popup.url.startswith("https://www.goersapp.com/organizations/sqa-prod--pppllvnap?utm_source=gem&utm_medium=share"), "URL popup salah"
+
+    # Tutup popup di akhir
+    popup.close()
+
+
+@allure.title("Klik tombol ATUR dan berhasil redirect ke /organizations")
+def test_click_button_atur(login_and_go_to_home):
     page = login_and_go_to_home
     home = HomePage(page)
-    home.click_atur_event()
-    assert "/event/" in page.url and "/manage" in page.url
+
+    # Klik tombol ATUR
+    home.click_button_atur()
+
+    # Validasi URL sudah redirect ke halaman organisasi
+    assert "/organizations" in page.url, f"Redirect gagal, current URL: {page.url}"
