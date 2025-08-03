@@ -27,7 +27,7 @@ def go_to_home_page():
         login.login_valid("userdua95@gmail.com", "testing02")
 
         search = SearchOrganizationPage(page)
-        search.search_and_select_organization("SQA PROD")
+        search.search_organization("SQA PROD")
         search.wait_for_organization_page()
         page.wait_for_load_state("networkidle")
 
