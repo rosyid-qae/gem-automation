@@ -61,3 +61,60 @@ def test_click_button_atur(login_and_go_to_home):
 
     # Validasi URL sudah redirect ke halaman organisasi
     assert "/organizations" in page.url, f"Redirect gagal, current URL: {page.url}"
+
+
+@allure.title("Redirect ke menu Event")
+def test_redirect_to_event(login_and_go_to_home):
+    page = login_and_go_to_home
+    home = HomePage(page)
+
+    home.redirect_to_event()
+
+    assert "/events" in page.url, f"Redirect ke menu Event gagal, current URL: {page.url}"
+    page.wait_for_timeout(2000)  # Tunggu sebentar untuk memastikan halaman siap
+
+@allure.title("Redirect ke menu Venue")
+def test_redirect_to_venue(login_and_go_to_home):
+    page = login_and_go_to_home
+    home = HomePage(page)
+
+    home.redirect_to_venue()
+
+    assert "/venues" in page.url, f"Redirect ke menu Venue gagal, current URL: {page.url}"
+    page.wait_for_timeout(2000)  # Tunggu sebentar untuk memastikan halaman siap
+
+@allure.title("Redirect ke menu Layanan")
+def test_redirect_to_layanan(login_and_go_to_home):
+    page = login_and_go_to_home
+    home = HomePage(page)
+
+    home.redirect_to_layanan()
+
+    assert "/services/additional-service" in page.url, f"Redirect ke menu Layanan Tambahan gagal, current URL: {page.url}"
+    page.wait_for_timeout(2000)  # Tunggu sebentar untuk memastikan halaman siap
+
+@allure.title("Redirect ke menu Settlement Venue dari Penagihan")
+def test_go_to_settlement_venue(login_and_go_to_home):
+    page = login_and_go_to_home
+    home = HomePage(page)
+    home.go_to_settlement_venue()
+    assert "/billings/venues" in page.url
+    page.wait_for_timeout(2000)  # Tunggu sebentar untuk memastikan halaman siap
+
+@allure.title("Redirect ke menu Penagihan Event dari Penagihan")
+def test_go_to_penagihan_event(login_and_go_to_home):
+    page = login_and_go_to_home
+    home = HomePage(page)
+    home.go_to_penagihan_event()
+    assert "/billings/events" in page.url
+    page.wait_for_timeout(2000)  # Tunggu sebentar untuk memastikan halaman siap
+
+@allure.title("Redirect ke menu Organisasi")
+def test_redirect_to_organizations(login_and_go_to_home):
+    page = login_and_go_to_home
+    home = HomePage(page)
+
+    home.redirect_to_organizations()
+
+    assert "/organizations" in page.url, f"Redirect ke menu Organisasai gagal, current URL: {page.url}"
+    page.wait_for_timeout(2000)  # Tunggu sebentar untuk memastikan halaman siap

@@ -3,6 +3,7 @@ import allure
 class HomePage:
     def __init__(self, page):
         self.page = page
+        self.page.wait_for_timeout(3000)
 
     @allure.step("Klik tombol LIHAT dari halaman Home")
     def click_button_lihat(self):
@@ -43,3 +44,47 @@ class HomePage:
         atur_button.wait_for(state="visible", timeout=10000)
         atur_button.click()
         self.page.wait_for_url("**/organizations", timeout=20000)
+
+    @allure.step("Klik menu Event dan redirect ke halaman Event")
+    def redirect_to_event(self):
+        menu_event = self.page.locator('a[data-testid="cta-menu-event"]')
+        menu_event.wait_for(state="visible", timeout=5000)
+        menu_event.click()
+        self.page.wait_for_url("**/events", timeout=10000)
+        return self.page
+    
+    @allure.step("Klik menu Venue dan redirect ke halaman Venue")
+    def redirect_to_venue(self):
+        menu_event = self.page.locator('a[data-testid="cta-menu-venue"]')
+        menu_event.wait_for(state="visible", timeout=5000)
+        menu_event.click()
+        self.page.wait_for_url("**/venues", timeout=10000)
+        return self.page
+
+    @allure.step("Klik menu Layanan dan redirect ke halaman Layanan Tambahan")
+    def redirect_to_layanan(self):
+        menu_event = self.page.locator('a[data-testid="cta-menu-layanan"]')
+        menu_event.wait_for(state="visible", timeout=5000)
+        menu_event.click()
+        self.page.wait_for_url("**/services/additional-service", timeout=10000)
+        return self.page
+    
+    @allure.step("Klik menu Penagihan > Settlement Venue")
+    def go_to_settlement_venue(self):
+        self.page.hover('[data-testid="cta-menu-penagihan"]')
+        self.page.wait_for_selector('[data-testid="cta-menu-penagihan-submenu-settlement-venue"]', state="visible")
+        self.page.click('[data-testid="cta-menu-penagihan-submenu-settlement-venue"]')
+
+    @allure.step("Klik menu Penagihan > Penagihan Event")
+    def go_to_penagihan_event(self):
+        self.page.hover('[data-testid="cta-menu-penagihan"]')
+        self.page.wait_for_selector('[data-testid="cta-menu-penagihan-submenu-penagihan-event"]', state="visible")
+        self.page.click('[data-testid="cta-menu-penagihan-submenu-penagihan-event"]')
+
+    @allure.step("Klik menu Layanan dan redirect ke halaman Layanan Tambahan")
+    def redirect_to_organizations(self):
+        menu_event = self.page.locator('a[data-testid="cta-menu-organisasi"]')
+        menu_event.wait_for(state="visible", timeout=5000)
+        menu_event.click()
+        self.page.wait_for_url("**/organizations", timeout=10000)
+        return self.page
