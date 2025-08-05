@@ -13,7 +13,7 @@ from page.home_page import HomePage
 @pytest.fixture(scope="function")
 def login_and_go_to_home():
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False, slow_mo=100)
+        browser = p.chromium.launch(headless=False, slow_mo=500)
         page = browser.new_page()
         page.goto("https://gem.goersapp.com")
 
@@ -118,3 +118,25 @@ def test_redirect_to_organizations(login_and_go_to_home):
 
     assert "/organizations" in page.url, f"Redirect ke menu Organisasai gagal, current URL: {page.url}"
     page.wait_for_timeout(2000)  # Tunggu sebentar untuk memastikan halaman siap
+
+@allure.title("Klik Buat Aktivitas - Buat Event")
+def test_click_create_event(login_and_go_to_home):
+    page = login_and_go_to_home
+    home = HomePage(page)
+
+    home.click_create_event()
+
+    # Validasi URL sudah redirect ke halaman buat event
+    assert "/events/create" in page.url, f"Redirect ke halaman buat event gagal, current URL: {page.url}"
+    page.wait_for_timeout(2000)
+
+@allure.title("Klik Buat Aktivitas - Buat Venue")
+def test_click_create_venue(login_and_go_to_home):
+    page = login_and_go_to_home
+    home = HomePage(page)
+
+    home.click_create_venue()
+
+    # Validasi URL sudah redirect ke halaman buat venue
+    assert "/venues/create" in page.url, f"Redirect ke halaman buat venue gagal, current URL: {page.url}"
+    page.wait_for_timeout(2000)

@@ -88,3 +88,16 @@ class HomePage:
         menu_event.click()
         self.page.wait_for_url("**/organizations", timeout=10000)
         return self.page
+    
+    @allure.step("Klik Buat Aktivitas - Buat Event")
+    def click_create_event(self):
+        self.page.hover('a[data-testid="cta-create-activity"]')
+        self.page.wait_for_selector('a[data-testid="cta-create-event"]', state="visible", timeout=5000)
+        self.page.click('a[data-testid="cta-create-event"]')
+
+    @allure.step("Klik Buat Aktivitas - Buat Venue")
+    def click_create_venue(self):
+        self.page.hover('a[data-testid="cta-create-activity"]')
+        self.page.wait_for_selector('a[data-testid="cta-create-venue"]', state="visible", timeout=5000)
+        self.page.click('a[data-testid="cta-create-venue"]')
+
