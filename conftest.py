@@ -6,6 +6,9 @@ import allure
 from playwright.sync_api import sync_playwright
 from page.login_page import LoginPage
 from page.search_organization_page import SearchOrganizationPage
+from page.home_page import HomePage
+from page.events.manage_event_page import ManageEventPage
+
 
 @pytest.fixture(scope="function")
 def page():
@@ -33,6 +36,23 @@ def go_to_home_page():
 
         yield page
         browser.close()
+
+# ✅ Fixture baru: langsung masuk ke menu Event
+@pytest.fixture(scope="function")
+def go_to_event_page(go_to_home_page):
+    page = go_to_home_page
+    home = HomePage(page)
+    home.redirect_to_event()
+
+    try:
+        page.wait_for_selector("text=BUAT EVENT", timeout=5000)
+        print("[DEBUG] Halaman Event berhasil dimuat")
+    except:
+        print("[WARNING] Halaman Event tidak berhasil dimuat")
+        page.screenshot(path="screenshots/debug_event_failed.png")
+        raise
+
+    return page
 
 # 🔥 Screenshot otomatis jika test gagal
 @pytest.hookimpl(hookwrapper=True)
