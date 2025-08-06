@@ -1,4 +1,5 @@
 
+import allure
 from playwright.sync_api import sync_playwright
 import random
 import string
@@ -112,7 +113,7 @@ with sync_playwright() as p:
     page = browser.new_page()
     page.goto('https://gem.goersapp.com', timeout=60000)
 
-
+    allure.title("Login dan buat tiket berbayar")
     # Halaman Login
     username = page.wait_for_selector('input[type="text"]')    
     username.type('userdua95@gmail.com')
@@ -123,11 +124,13 @@ with sync_playwright() as p:
     page.wait_for_selector('input[placeholder="Cari Organisasi"]', timeout=15000)
     print("✅ Berhasil login")
 
+    allure.step("Pilih organisasi SQA PROD")    
     # Cari dan pilih organisasi dengan nama "SQA PROD"
     page.fill('input[placeholder="Cari Organisasi"]', 'SQA PROD')
     page.press('input[placeholder="Cari Organisasi"]', 'Enter')
     print("✅ Berhasil menampilkan organisasi")
 
+    allure.step("Klik tombol PILIH untuk organisasi SQA PROD")  
     # Gunakan fungsi klik tombol PILIH untuk organisasi
     select_organization_by_name(page, "SQA PROD")
     page.wait_for_selector('nav.site-menu', timeout=30000)
@@ -143,22 +146,27 @@ with sync_playwright() as p:
     page.wait_for_selector('div.Label__Label-jsURsk:has-text("Daftar Event")', timeout=50000)
     print("✅ Konten Event sudah muncul")
 
+    allure.step("Klik event dengan ID 43529")   
     # Klik event berdasarkan ID
     open_event_by_id(page, 43529)
 
+    allure.step("Masuk ke sub-menu Tiket Event")
     # ✅ Masuk ke sub-menu Event
     go_to_event_submenu(page, "Tiket Event", "/tickets")
 
+    allure.step("Klik tombol Tiket Baru")
     # Klik tombol "Tiket Baru"
     page.click('a.btn-primary:has-text("Tiket Baru")')
     # Tunggu dropdown muncul
     page.wait_for_selector('div.toolbar-dropdown', timeout=10000)
+
+    allure.step("Klik opsi Tiket Berbayar")
     # Klik opsi "TIKET BERBAYAR"
     page.click('a.btn.btn-link-info:has-text("TIKET BERBAYAR")')
     print("✅ Berhasil klik Tiket Berbayar")
 
+    allure.step("Isi form tiket berbayar")
     # HALAMAN BUAT TIKET BERBAYAR
-
     # Tunggu form input muncul
     page.wait_for_selector('input[placeholder="Masukkan nama tiket"]', timeout=10000)
     # Input nama, harga dan kouta
@@ -168,10 +176,13 @@ with sync_playwright() as p:
     # Klik checkbox sesi aktif (jika perlu)
     ticket_session_checkboxes = 'div.TicketSales__Group-hoJUzw input[type="checkbox"]:not([disabled])'
 
+
     # Klik tombol TAYANGKAN TIKET
+    allure.step("Klik tombol TAYANGKAN TIKET")
     page.click('a.btn-success:has-text("TAYANGKAN TIKET")', force=True)
     page.wait_for_load_state('load')  # atau 'domcontentloaded'
 
+    allure.step("Tunggu popup sukses dan verifikasi")
     print("✅ Tiket berhasil disimpan dan ditayangkan")
     
     page.wait_for_timeout(5000)
