@@ -26,7 +26,7 @@ def test_login_valid():
 
         with allure.step("Ambil screenshot setelah login"):
             page.screenshot(path="login_valid_result.png")
-            allure.attach.file("login_valid_result.png", name="Login Berhasil", attachment_type=allure.attachment_type.PNG)
+            allure.attach.file("screenshots/login_valid_result.png", name="Login Berhasil", attachment_type=allure.attachment_type.PNG)
 
         with allure.step("Verifikasi halaman setelah login"):
             current_url = page.url
@@ -57,7 +57,7 @@ def test_login_invalid():
 
         with allure.step("Ambil screenshot hasil"):
             page.screenshot(path="login_invalid_result.png")
-            allure.attach.file("login_invalid_result.png", name="Login Gagal", attachment_type=allure.attachment_type.PNG)
+            allure.attach.file("screenshots/login_invalid_result.png", name="Login Gagal", attachment_type=allure.attachment_type.PNG)
 
         with allure.step("Pastikan pesan error tampil"):
             assert error_message is not None, "Tidak menemukan pesan error"

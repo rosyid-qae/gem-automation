@@ -96,5 +96,4 @@ def test_search_event(go_to_event_page):
     event_page = ManageEventPage(page)
 
     event_page.search_event("Testing Event 1")  # ganti dengan nama event yang kamu tahu ada
-   
     page.wait_for_timeout(2000)  # Tunggu sebentar untuk memastikan hasil muncul

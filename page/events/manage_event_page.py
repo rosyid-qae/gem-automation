@@ -49,25 +49,6 @@ class ManageEventPage:
         print("[INFO] Berhasil klik tombol Buat Event")
         return self.page
 
-    # @allure.step("Cari event berdasarkan keyword: {keyword}")
-    # def search_event(self, keyword: str):
-    #     try:
-    #         search_input = self.page.locator("input[placeholder='Cari event']")
-    #         search_input.fill(keyword)
-    #         print(f"[INFO] Mengisi keyword: {keyword}")
-
-    #         # Klik tombol cari
-    #         search_button = self.page.locator("div.___event-list__search button")
-    #         search_button.click()
-    #         print("[INFO] Klik tombol cari event")
-
-    #         self.page.wait_for_load_state("networkidle")
-    #         self.page.wait_for_timeout(1000)  # delay untuk hasil tampil
-    #     except Exception as e:
-    #         print(f"[ERROR] Gagal melakukan pencarian event: {e}")
-    #         self.page.screenshot(path=f"screenshots/search_event_{keyword}.png")
-    #         raise
-
     @allure.step("Cari event dengan mengetik dan tekan Enter: {keyword}")
     def search_event(self, keyword: str):
         try:
