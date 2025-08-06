@@ -20,19 +20,68 @@ class ManageEventPage:
         analytics_button.click()
         self.page.wait_for_url("**/events/analytics", timeout=10000)    
         return self.page
-    
-    # @allure.step("Klik menu Analitik Event")
-    # def click_analytics_menu(self):
-    #     analytics_button = self.page.locator('a[data-testid="cta-sidemenu-analitik-event"]')
 
+    @allure.step("Pindah-pindah tab event: Semua → Draf → Tayang → Berakhir → Semua")
+    def switch_event_tabs(self):
+        tab_texts = ["SEMUA EVENT", "DRAF", "TAYANG", "BERAKHIR", "SEMUA EVENT"]
+
+        for tab in tab_texts:
+            try:
+                tab_selector = f'a.nav-link:has-text("{tab}")'
+                self.page.locator(tab_selector).click()
+                print(f"[INFO] Klik tab: {tab}")
+                self.page.wait_for_selector("div.card", timeout=5000)
+                self.page.wait_for_timeout(500)  # opsional delay animasi
+            except Exception as e:
+                print(f"[ERROR] Gagal klik tab: {tab} → {str(e)}")
+                self.page.screenshot(path=f"screenshots/tab_{tab.lower().replace(' ', '_')}_error.png")
+                raise e
+
+        print("[INFO] Selesai jelajahi semua tab event")
+        self.page.wait_for_timeout(3000)
+
+    @allure.step("Klik tombol Buat Event")
+    def click_create_event(self):
+        create_button = self.page.locator("a.btn-success[href='/events/create/package']")
+        create_button.wait_for(state="visible", timeout=5000)
+        create_button.click()
+        self.page.wait_for_url("**/events/create", timeout=10000)
+        print("[INFO] Berhasil klik tombol Buat Event")
+        return self.page
+
+    # @allure.step("Cari event berdasarkan keyword: {keyword}")
+    # def search_event(self, keyword: str):
     #     try:
-    #         analytics_button.wait_for(state="visible", timeout=10000)  # Perpanjang timeout jadi 10 detik
-    #         analytics_button.click()
-    #         self.page.wait_for_url("**/events/analytics", timeout=10000)
-    #         print("[INFO] Menu Analitik Event berhasil diklik")
-    #     except Exception as e:
-    #         print("[ERROR] Menu Analitik Event tidak muncul atau tidak bisa diklik")
-    #         self.page.screenshot(path="screenshots/analytics_menu_not_found.png")
-    #         raise e
+    #         search_input = self.page.locator("input[placeholder='Cari event']")
+    #         search_input.fill(keyword)
+    #         print(f"[INFO] Mengisi keyword: {keyword}")
 
-    #     return self.page
+    #         # Klik tombol cari
+    #         search_button = self.page.locator("div.___event-list__search button")
+    #         search_button.click()
+    #         print("[INFO] Klik tombol cari event")
+
+    #         self.page.wait_for_load_state("networkidle")
+    #         self.page.wait_for_timeout(1000)  # delay untuk hasil tampil
+    #     except Exception as e:
+    #         print(f"[ERROR] Gagal melakukan pencarian event: {e}")
+    #         self.page.screenshot(path=f"screenshots/search_event_{keyword}.png")
+    #         raise
+
+    @allure.step("Cari event dengan mengetik dan tekan Enter: {keyword}")
+    def search_event(self, keyword: str):
+        try:
+            search_input = self.page.locator("input[placeholder='Cari event']")
+            search_input.fill("")  # kosongkan dulu
+            search_input.fill(keyword)
+            print(f"[INFO] Mengetik keyword: {keyword}")
+
+            search_input.press("Enter")
+            print("[INFO] Tekan Enter setelah input keyword")
+
+            self.page.wait_for_load_state("networkidle")
+            self.page.wait_for_timeout(1000)  # delay untuk tampilkan hasil
+        except Exception as e:
+            print(f"[ERROR] Gagal cari event dengan Enter: {e}")
+            self.page.screenshot(path=f"screenshots/search_event_{keyword}.png")
+            raise
