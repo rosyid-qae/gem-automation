@@ -4,7 +4,7 @@ from playwright.sync_api import sync_playwright
 from page.login_page import LoginPage
 
 
-
+@allure.title("Login dengan email dan password valid")
 def test_login_valid():
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=False, slow_mo=50)
@@ -25,8 +25,8 @@ def test_login_valid():
                 print("⚠️ Halaman belum berpindah ke organization dalam 10 detik")
 
         with allure.step("Ambil screenshot setelah login"):
-            page.screenshot(path="login_valid_result.png")
-            allure.attach.file("screenshots/login_valid_result.png", name="Login Berhasil", attachment_type=allure.attachment_type.PNG)
+            page.screenshot(path="screenshots/login_valid_result.png")
+            allure.attach.file("login_valid_result.png", name="Login Berhasil", attachment_type=allure.attachment_type.PNG)
 
         with allure.step("Verifikasi halaman setelah login"):
             current_url = page.url
@@ -35,7 +35,7 @@ def test_login_valid():
 
         browser.close()
 
-
+@allure.title("Login dengan email dan password salah")
 def test_login_invalid():
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=False, slow_mo=50)
@@ -56,8 +56,8 @@ def test_login_invalid():
                 error_message = None
 
         with allure.step("Ambil screenshot hasil"):
-            page.screenshot(path="login_invalid_result.png")
-            allure.attach.file("screenshots/login_invalid_result.png", name="Login Gagal", attachment_type=allure.attachment_type.PNG)
+            page.screenshot(path="screenshots/login_invalid_result.png")
+            allure.attach.file("login_invalid_result.png", name="Login Gagal", attachment_type=allure.attachment_type.PNG)
 
         with allure.step("Pastikan pesan error tampil"):
             assert error_message is not None, "Tidak menemukan pesan error"

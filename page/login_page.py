@@ -1,4 +1,5 @@
 # page/login_page.py
+import allure
 
 class LoginPage:
     def __init__(self, page):
@@ -7,7 +8,7 @@ class LoginPage:
         self.password_input = 'input[placeholder="Password Anda"]'
         self.login_button = 'a.btn-success'  # tombol login adalah <a>, bukan <button>
 
-
+    @allure.step("Login dengan email dan password yang valid")
     def login_valid(self, email, password):
         self.page.goto("https://gem.goersapp.com/login")
         print("Halaman login dibuka")
@@ -28,7 +29,7 @@ class LoginPage:
         self.page.wait_for_load_state('networkidle')
         print("Selesai login")
 
-
+    @allure.step("Login dengan email dan password yang tidak valid")
     def login_invalid(self, email, password):
         self.page.goto("https://gem.goersapp.com/login")
         self.page.wait_for_selector(self.email_input)
