@@ -76,6 +76,8 @@ def test_switch_event_tabs(go_to_event_page):
     event_page = ManageEventPage(page)
 
     event_page.switch_event_tabs()
+    assert "/events" in page.url, f"Masih di halaman event, current URL: {page.url}"
+    page.wait_for_timeout(2000)  # Tunggu sebentar untuk memastikan halaman siap
 
 # ✅ Test klik tombol Buat Event
 @allure.title("Klik tombol Buat Event")
@@ -89,7 +91,7 @@ def test_click_create_event(go_to_event_page):
     assert "/events/create" in page.url, f"Redirect ke halaman Buat Event gagal, current URL: {page.url}"
     page.wait_for_timeout(2000)
 
-# ✅ Test pencarian event
+# ✅ Test pencarian event valid
 @allure.title("Cari event berdasarkan nama")
 def test_search_event(go_to_event_page):
     page = go_to_event_page
@@ -97,3 +99,12 @@ def test_search_event(go_to_event_page):
 
     event_page.search_event("Testing Event 1")  # ganti dengan nama event yang kamu tahu ada
     page.wait_for_timeout(2000)  # Tunggu sebentar untuk memastikan hasil muncul
+
+# # ✅ Test pencarian event invalid
+# @allure.title("Cari event berdasarkan nama - nama tidak ditemukan")
+# def test_search_event_invalid(go_to_event_page):
+#     page = go_to_event_page
+#     event_page = ManageEventPage(page)
+
+#     event_page.search_event("Testing Event tidak ada")  # ganti dengan nama event yang kamu tahu ada
+#     page.wait_for_timeout(2000)  # Tunggu sebentar untuk memastikan hasil muncul

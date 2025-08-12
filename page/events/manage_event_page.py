@@ -21,24 +21,33 @@ class ManageEventPage:
         self.page.wait_for_url("**/events/analytics", timeout=10000)    
         return self.page
 
-    @allure.step("Pindah-pindah tab event: Semua → Draf → Tayang → Berakhir → Semua")
-    def switch_event_tabs(self):
-        tab_texts = ["SEMUA EVENT", "DRAF", "TAYANG", "BERAKHIR", "SEMUA EVENT"]
+@allure.step("Pindah-pindah tab event: Semua → Draf → Tayang → Berakhir → Semua")
+def switch_event_tabs(self):
+    # Tunggu 2 detik sebelum mulai berpindah tab (setelah buka menu event)
+    self.page.wait_for_timeout(2000)
 
-        for tab in tab_texts:
-            try:
-                tab_selector = f'a.nav-link:has-text("{tab}")'
-                self.page.locator(tab_selector).click()
-                print(f"[INFO] Klik tab: {tab}")
-                self.page.wait_for_selector("div.card", timeout=5000)
-                self.page.wait_for_timeout(500)  # opsional delay animasi
-            except Exception as e:
-                print(f"[ERROR] Gagal klik tab: {tab} → {str(e)}")
-                self.page.screenshot(path=f"screenshots/tab_{tab.lower().replace(' ', '_')}_error.png")
-                raise e
+    tab_texts = [
+        ("SEMUA EVENT", 2000),
+        ("DRAF", 2000),
+        ("TAYANG", 2000),
+        ("BERAKHIR", 2000),
+        ("SEMUA EVENT", 3000),
+    ]
 
-        print("[INFO] Selesai jelajahi semua tab event")
-        self.page.wait_for_timeout(3000)
+    for tab, delay in tab_texts:
+        try:
+            tab_selector = f'a.nav-link:has-text("{tab}")'
+            self.page.locator(tab_selector).click()
+            print(f"[INFO] Klik tab: {tab}")
+            self.page.wait_for_selector("div.card", timeout=5000)
+            self.page.wait_for_timeout(delay)  # delay setelah pindah tab
+        except Exception as e:
+            print(f"[ERROR] Gagal klik tab: {tab} → {str(e)}")
+            self.page.screenshot(path=f"screenshots/tab_{tab.lower().replace(' ', '_')}_error.png")
+            raise e
+
+    print("[INFO] Selesai jelajahi semua tab event")
+
 
     @allure.step("Klik tombol Buat Event")
     def click_create_event(self):
