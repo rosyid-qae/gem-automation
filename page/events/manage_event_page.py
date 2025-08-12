@@ -21,34 +21,6 @@ class ManageEventPage:
         self.page.wait_for_url("**/events/analytics", timeout=10000)    
         return self.page
 
-@allure.step("Pindah-pindah tab event: Semua → Draf → Tayang → Berakhir → Semua")
-def switch_event_tabs(self):
-    # Tunggu 2 detik sebelum mulai berpindah tab (setelah buka menu event)
-    self.page.wait_for_timeout(2000)
-
-    tab_texts = [
-        ("SEMUA EVENT", 2000),
-        ("DRAF", 2000),
-        ("TAYANG", 2000),
-        ("BERAKHIR", 2000),
-        ("SEMUA EVENT", 3000),
-    ]
-
-    for tab, delay in tab_texts:
-        try:
-            tab_selector = f'a.nav-link:has-text("{tab}")'
-            self.page.locator(tab_selector).click()
-            print(f"[INFO] Klik tab: {tab}")
-            self.page.wait_for_selector("div.card", timeout=5000)
-            self.page.wait_for_timeout(delay)  # delay setelah pindah tab
-        except Exception as e:
-            print(f"[ERROR] Gagal klik tab: {tab} → {str(e)}")
-            self.page.screenshot(path=f"screenshots/tab_{tab.lower().replace(' ', '_')}_error.png")
-            raise e
-
-    print("[INFO] Selesai jelajahi semua tab event")
-
-
     @allure.step("Klik tombol Buat Event")
     def click_create_event(self):
         create_button = self.page.locator("a.btn-success[href='/events/create/package']")
@@ -75,3 +47,85 @@ def switch_event_tabs(self):
             print(f"[ERROR] Gagal cari event dengan Enter: {e}")
             self.page.screenshot(path=f"screenshots/search_event_{keyword}.png")
             raise
+
+    @allure.step("Pindah antar tab event dari Semua → Draf → Tayang → Berakhir → Semua")
+    def switch_event_tabs(self):
+        tabs = ["SEMUA EVENT", "DRAF", "TAYANG", "BERAKHIR"]
+
+        for tab in tabs:
+            try:
+                tab_selector = f'a.nav-link:has-text("{tab}")'
+                tab_element = self.page.locator(tab_selector)
+
+                # Cek kalau tab belum aktif → klik
+                if not tab_element.get_attribute("class") or "active" not in tab_element.get_attribute("class"):
+                    tab_element.click()
+                    print(f"[INFO] Klik tab: {tab}")
+                else:
+                    print(f"[INFO] Tab {tab} sudah aktif, tidak diklik")
+
+                # Tunggu konten muncul (card atau empty state) max 10 detik
+                try:
+                    self.page.wait_for_selector(
+                        "div.card, div.Empty__Wrapper-btpzwW",
+                        state="attached",
+                        timeout=3000
+                    )
+                    print(f"[INFO] Konten tab {tab} berhasil dimuat")
+                except:
+                    print(f"[WARN] Konten tab {tab} tidak muncul, lanjut ke tab berikutnya")
+                    error_path = f"screenshots/tab_{tab.lower()}_empty.png"
+                    self.page.screenshot(path=error_path)
+                    allure.attach.file(
+                        error_path,
+                        name=f"Tab {tab} Kosong / Timeout",
+                        attachment_type=allure.attachment_type.PNG
+                    )
+                    continue  # skip ke tab berikutnya
+
+                # Delay 2 detik biar kelihatan di video/screenshot
+                self.page.wait_for_timeout(2000)
+
+            except Exception as e:
+                print(f"[ERROR] Gagal load tab: {tab} → {str(e)}")
+                error_path = f"screenshots/tab_{tab.lower()}_error.png"
+                self.page.screenshot(path=error_path)
+                allure.attach.file(
+                    error_path,
+                    name=f"Tab {tab} Error",
+                    attachment_type=allure.attachment_type.PNG
+                )
+                # lanjut ke tab berikutnya walau error
+                continue
+
+        print("[INFO] Selesai jelajahi semua tab event")
+
+    @allure.step("Klik detail event: {event_name}")
+    def click_event_by_name1S(self, event_name: str):
+        try:
+            # Cari card event yang mengandung nama event
+            event_locator = self.page.locator(f"div.card:has-text('{event_name}')").first
+            event_locator.wait_for(state="visible", timeout=5000)
+            event_locator.click()
+            print(f"[INFO] Klik event: {event_name}")
+
+            # Tunggu halaman detail event terbuka
+            self.page.wait_for_load_state("networkidle")
+            self.page.wait_for_timeout(1000)
+        except Exception as e:
+            print(f"[ERROR] Gagal klik event '{event_name}': {e}")
+            self.page.screenshot(path=f"screenshots/click_event_{event_name}.png")
+            raise
+
+    @allure.step("Klik event berdasarkan nama: {event_name}")
+    def click_event_by_name(self, event_name: str):
+        try:
+            event_link = self.page.locator(f"a:has(div.___event-card__content__name:has-text('{event_name}'))").first
+            event_link.wait_for(state="visible", timeout=10000)
+            event_link.click()
+            print(f"[INFO] Berhasil klik event '{event_name}'")
+        except Exception as e:
+            print(f"[ERROR] Gagal klik event '{event_name}': {e}")
+            self.page.screenshot(path=f"screenshots/click_event_error_{event_name}.png")
+            raise
+

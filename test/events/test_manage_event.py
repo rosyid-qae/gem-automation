@@ -100,11 +100,22 @@ def test_search_event(go_to_event_page):
     event_page.search_event("Testing Event 1")  # ganti dengan nama event yang kamu tahu ada
     page.wait_for_timeout(2000)  # Tunggu sebentar untuk memastikan hasil muncul
 
-# # ✅ Test pencarian event invalid
-# @allure.title("Cari event berdasarkan nama - nama tidak ditemukan")
-# def test_search_event_invalid(go_to_event_page):
-#     page = go_to_event_page
-#     event_page = ManageEventPage(page)
+# ✅ Test pencarian event invalid
+@allure.title("Cari event berdasarkan nama - nama tidak ditemukan")
+def test_search_event_invalid(go_to_event_page):
+    page = go_to_event_page
+    event_page = ManageEventPage(page)
 
-#     event_page.search_event("Testing Event tidak ada")  # ganti dengan nama event yang kamu tahu ada
-#     page.wait_for_timeout(2000)  # Tunggu sebentar untuk memastikan hasil muncul
+    event_page.search_event("Testing Event tidak ada")  # ganti dengan nama event yang kamu tahu ada
+    page.wait_for_timeout(2000)  # Tunggu sebentar untuk memastikan hasil muncul
+
+@allure.title("Cari dan masuk ke detail event")
+def test_search_and_open_event(go_to_event_page):
+    page = go_to_event_page
+    event_page = ManageEventPage(page)
+
+    event_name = "Testing Event 1"
+    event_page.search_event(event_name)
+    event_page.click_event_by_name(event_name)
+
+    page.wait_for_timeout(2000)  # opsional, melihat halaman detail
